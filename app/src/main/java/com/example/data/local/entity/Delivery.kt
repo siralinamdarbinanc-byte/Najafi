@@ -27,7 +27,9 @@ data class Delivery(
     val destination: String,
     val orderDescription: String = "",
     val orderAmount: Long? = null,
+    val isOrderAmountPaid: Boolean = true,
     val deliveryFee: Long? = null,
+    val isDeliveryFeePaid: Boolean = true,
     val status: String = STATUS_IN_PROGRESS, // IN_PROGRESS, COMPLETED, CANCELED
     val notes: String = "",
     val createdAt: Long = System.currentTimeMillis(),

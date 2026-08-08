@@ -38,6 +38,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -208,17 +210,63 @@ fun MissionDetailScreen(
                         )
                     }
 
-                    DetailRowItem(
-                        icon = Icons.Default.AttachMoney,
-                        label = "مبلغ سفارش",
-                        value = JalaliCalendarHelper.formatToman(d.orderAmount)
-                    )
+                    // Order Amount Row with Toggle
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        DetailRowItem(
+                            icon = Icons.Default.AttachMoney,
+                            label = "مبلغ سفارش",
+                            value = JalaliCalendarHelper.formatToman(d.orderAmount)
+                        )
 
-                    DetailRowItem(
-                        icon = Icons.Default.AttachMoney,
-                        label = "کرایه پیک",
-                        value = JalaliCalendarHelper.formatToman(d.deliveryFee)
-                    )
+                        FilterChip(
+                            selected = d.isOrderAmountPaid,
+                            onClick = { viewModel.toggleOrderAmountPaid() },
+                            label = {
+                                Text(
+                                    text = if (d.isOrderAmountPaid) "مبلغ دریافت شد" else "مبلغ دریافت نشد",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        )
+                    }
+
+                    // Delivery Fee Row with Toggle
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        DetailRowItem(
+                            icon = Icons.Default.AttachMoney,
+                            label = "کرایه پیک",
+                            value = JalaliCalendarHelper.formatToman(d.deliveryFee)
+                        )
+
+                        FilterChip(
+                            selected = d.isDeliveryFeePaid,
+                            onClick = { viewModel.toggleDeliveryFeePaid() },
+                            label = {
+                                Text(
+                                    text = if (d.isDeliveryFeePaid) "کرایه دریافت شد" else "کرایه دریافت نشد",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                        )
+                    }
 
                     if (d.notes.isNotBlank()) {
                         DetailRowItem(

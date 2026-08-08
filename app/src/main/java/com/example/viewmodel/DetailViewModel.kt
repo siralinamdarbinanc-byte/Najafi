@@ -81,6 +81,26 @@ class DetailViewModel(
         }
     }
 
+    fun toggleDeliveryFeePaid() {
+        val details = deliveryDetails.value ?: return
+        viewModelScope.launch {
+            deliveryRepository.updateDeliveryFeePaymentStatus(
+                details.delivery.id,
+                !details.delivery.isDeliveryFeePaid
+            )
+        }
+    }
+
+    fun toggleOrderAmountPaid() {
+        val details = deliveryDetails.value ?: return
+        viewModelScope.launch {
+            deliveryRepository.updateOrderAmountPaymentStatus(
+                details.delivery.id,
+                !details.delivery.isOrderAmountPaid
+            )
+        }
+    }
+
     fun confirmDelete(onDeleted: () -> Unit) {
         val details = deliveryDetails.value ?: return
         viewModelScope.launch {

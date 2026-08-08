@@ -31,7 +31,9 @@ data class NewMissionUiState(
     val destination: String = "",
     val orderDescription: String = "",
     val orderAmountStr: String = "",
+    val isOrderAmountPaid: Boolean = true,
     val deliveryFeeStr: String = "",
+    val isDeliveryFeePaid: Boolean = true,
     val status: String = Delivery.STATUS_IN_PROGRESS,
     val notes: String = "",
     val photos: List<PhotoItem> = emptyList(),
@@ -72,7 +74,9 @@ class NewMissionViewModel(
                         destination = d.destination,
                         orderDescription = d.orderDescription,
                         orderAmountStr = d.orderAmount?.toString() ?: "",
+                        isOrderAmountPaid = d.isOrderAmountPaid,
                         deliveryFeeStr = d.deliveryFee?.toString() ?: "",
+                        isDeliveryFeePaid = d.isDeliveryFeePaid,
                         status = d.status,
                         notes = d.notes,
                         photos = deliveryWithDetails.photos.map { p -> PhotoItem(id = p.id, path = p.localPath) }
@@ -116,6 +120,14 @@ class NewMissionViewModel(
         if (feeStr.isEmpty() || feeStr.all { it.isDigit() }) {
             _uiState.update { it.copy(deliveryFeeStr = feeStr) }
         }
+    }
+
+    fun onOrderAmountPaidChanged(isPaid: Boolean) {
+        _uiState.update { it.copy(isOrderAmountPaid = isPaid) }
+    }
+
+    fun onDeliveryFeePaidChanged(isPaid: Boolean) {
+        _uiState.update { it.copy(isDeliveryFeePaid = isPaid) }
     }
 
     fun onStatusChanged(newStatus: String) {
@@ -209,7 +221,9 @@ class NewMissionViewModel(
                 destination = currentState.destination.trim(),
                 orderDescription = currentState.orderDescription.trim(),
                 orderAmount = amount,
+                isOrderAmountPaid = currentState.isOrderAmountPaid,
                 deliveryFee = fee,
+                isDeliveryFeePaid = currentState.isDeliveryFeePaid,
                 status = currentState.status,
                 notes = currentState.notes.trim()
             )

@@ -133,6 +133,71 @@ object JalaliCalendarHelper {
     }
 
     /**
+     * Converts a numeric amount to Persian words (e.g. 150000 -> "صد و پنجاه هزار تومان")
+     */
+    fun numberToPersianWords(amount: Long?): String {
+        if (amount == null || amount <= 0L) return ""
+
+        val units = arrayOf("", "یک", "دو", "سه", "چهار", "پنج", "شش", "هفت", "هشت", "نه")
+        val teens = arrayOf("ده", "یازده", "دوازده", "سیزده", "چهارده", "پانزده", "شانزده", "هفده", "هجده", "نوزده")
+        val tens = arrayOf("", "", "بیست", "سی", "چهل", "پنجاه", "شصت", "هفتاد", "هشتاد", "نود")
+        val hundreds = arrayOf("", "صد", "دویست", "سیصد", "چهارصد", "پانصد", "ششصد", "هفتصد", "هشتصد", "نهصد")
+        val scales = arrayOf("", "هزار", "میلیون", "میلیارد", "تریلیون")
+
+        fun convertThreeDigits(num: Int): String {
+            if (num == 0) return ""
+            val parts = mutableListOf<String>()
+
+            val h = num / 100
+            val rem = num % 100
+
+            if (h > 0) {
+                parts.add(hundreds[h])
+            }
+
+            if (rem in 1..9) {
+                parts.add(units[rem])
+            } else if (rem in 10..19) {
+                parts.add(teens[rem - 10])
+            } else if (rem >= 20) {
+                val t = rem / 10
+                val u = rem % 10
+                if (t > 0) parts.add(tens[t])
+                if (u > 0) parts.add(units[u])
+            }
+
+            return parts.joinToString(" و ")
+        }
+
+        var temp = amount
+        val chunks = mutableListOf<Int>()
+        while (temp > 0) {
+            chunks.add((temp % 1000).toInt())
+            temp /= 1000
+        }
+
+        val wordParts = mutableListOf<String>()
+        for (i in chunks.indices.reversed()) {
+            val chunkVal = chunks[i]
+            if (chunkVal > 0) {
+                val chunkWords = convertThreeDigits(chunkVal)
+                val scale = scales.getOrElse(i) { "" }
+                if (scale.isNotEmpty()) {
+                    wordParts.add("$chunkWords $scale")
+                } else {
+                    wordParts.add(chunkWords)
+                }
+            }
+        }
+
+        return if (wordParts.isNotEmpty()) {
+            wordParts.joinToString(" و ") + " تومان"
+        } else {
+            ""
+        }
+    }
+
+    /**
      * Checks if a date string (yyyy/MM/dd) falls today
      */
     fun isToday(dateStr: String): Boolean {

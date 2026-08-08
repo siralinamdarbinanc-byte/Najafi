@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.DirectionsBike
 import androidx.compose.material.icons.filled.LocationOn
@@ -43,6 +44,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -266,32 +268,173 @@ fun NewMissionScreen(
                 )
             }
 
-            // 6. Amounts: Order Amount & Delivery Fee
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            // 6. Amounts: Order Amount & Delivery Fee with Payment Statuses
+            Column(
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                OutlinedTextField(
-                    value = state.orderAmountStr,
-                    onValueChange = { viewModel.onOrderAmountChanged(it) },
-                    label = { Text("مبلغ سفارش (تومان)") },
-                    leadingIcon = { Icon(Icons.Default.AttachMoney, contentDescription = null) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f),
-                    singleLine = true,
-                    shape = RoundedCornerShape(12.dp)
-                )
+                // Order Amount Block
+                val orderAmountVal = state.orderAmountStr.toLongOrNull()
+                val orderAmountWords = JalaliCalendarHelper.numberToPersianWords(orderAmountVal)
 
-                OutlinedTextField(
-                    value = state.deliveryFeeStr,
-                    onValueChange = { viewModel.onDeliveryFeeChanged(it) },
-                    label = { Text("کرایه پیک (تومان)") },
-                    leadingIcon = { Icon(Icons.Default.AttachMoney, contentDescription = null) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f),
-                    singleLine = true,
-                    shape = RoundedCornerShape(12.dp)
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                            shape = RoundedCornerShape(14.dp)
+                        )
+                        .padding(12.dp)
+                ) {
+                    OutlinedTextField(
+                        value = state.orderAmountStr,
+                        onValueChange = { viewModel.onOrderAmountChanged(it) },
+                        label = { Text("مبلغ سفارش (تومان)") },
+                        leadingIcon = { Icon(Icons.Default.AttachMoney, contentDescription = null) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+
+                    if (orderAmountWords.isNotBlank()) {
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Surface(
+                            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "مبلغ به حروف: $orderAmountWords",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "وضعیت دریافت مبلغ سفارش:",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        FilterChip(
+                            selected = state.isOrderAmountPaid,
+                            onClick = { viewModel.onOrderAmountPaidChanged(true) },
+                            label = { Text("مبلغ دریافت شد", fontSize = 12.sp, fontWeight = FontWeight.Bold) },
+                            leadingIcon = if (state.isOrderAmountPaid) {
+                                { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp)) }
+                            } else null,
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        )
+
+                        FilterChip(
+                            selected = !state.isOrderAmountPaid,
+                            onClick = { viewModel.onOrderAmountPaidChanged(false) },
+                            label = { Text("مبلغ دریافت نشد", fontSize = 12.sp, fontWeight = FontWeight.Bold) },
+                            leadingIcon = if (!state.isOrderAmountPaid) {
+                                { Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(16.dp)) }
+                            } else null,
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.errorContainer,
+                                selectedLabelColor = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                        )
+                    }
+                }
+
+                // Delivery Fee Block
+                val deliveryFeeVal = state.deliveryFeeStr.toLongOrNull()
+                val deliveryFeeWords = JalaliCalendarHelper.numberToPersianWords(deliveryFeeVal)
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                            shape = RoundedCornerShape(14.dp)
+                        )
+                        .padding(12.dp)
+                ) {
+                    OutlinedTextField(
+                        value = state.deliveryFeeStr,
+                        onValueChange = { viewModel.onDeliveryFeeChanged(it) },
+                        label = { Text("کرایه پیک (تومان)") },
+                        leadingIcon = { Icon(Icons.Default.AttachMoney, contentDescription = null) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+
+                    if (deliveryFeeWords.isNotBlank()) {
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Surface(
+                            color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.7f),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "کرایه به حروف: $deliveryFeeWords",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "وضعیت دریافت کرایه پیک:",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        FilterChip(
+                            selected = state.isDeliveryFeePaid,
+                            onClick = { viewModel.onDeliveryFeePaidChanged(true) },
+                            label = { Text("کرایه دریافت شد", fontSize = 12.sp, fontWeight = FontWeight.Bold) },
+                            leadingIcon = if (state.isDeliveryFeePaid) {
+                                { Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp)) }
+                            } else null,
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        )
+
+                        FilterChip(
+                            selected = !state.isDeliveryFeePaid,
+                            onClick = { viewModel.onDeliveryFeePaidChanged(false) },
+                            label = { Text("کرایه دریافت نشد", fontSize = 12.sp, fontWeight = FontWeight.Bold) },
+                            leadingIcon = if (!state.isDeliveryFeePaid) {
+                                { Icon(Icons.Default.Close, contentDescription = null, modifier = Modifier.size(16.dp)) }
+                            } else null,
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = MaterialTheme.colorScheme.errorContainer,
+                                selectedLabelColor = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                        )
+                    }
+                }
             }
 
             // 7. Mission Status

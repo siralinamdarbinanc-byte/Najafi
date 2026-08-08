@@ -38,6 +38,10 @@ data class ReportUiState(
     val canceledMissionsCount: Int = 0,
     val inProgressMissionsCount: Int = 0,
     val totalDeliveryFee: Long = 0L,
+    val paidDeliveryFee: Long = 0L,
+    val unpaidDeliveryFee: Long = 0L,
+    val paidOrderAmount: Long = 0L,
+    val unpaidOrderAmount: Long = 0L,
     val driverReports: List<DriverReportSummary> = emptyList()
 )
 
@@ -70,9 +74,13 @@ class ReportViewModel(
         val canceled = filteredDeliveries.count { it.delivery.status == Delivery.STATUS_CANCELED }
         val inProgress = filteredDeliveries.count { it.delivery.status == Delivery.STATUS_IN_PROGRESS }
 
-        val totalFee = filteredDeliveries
-            .filter { it.delivery.status != Delivery.STATUS_CANCELED }
-            .sumOf { it.delivery.deliveryFee ?: 0L }
+        val nonCanceled = filteredDeliveries.filter { it.delivery.status != Delivery.STATUS_CANCELED }
+        val totalFee = nonCanceled.sumOf { it.delivery.deliveryFee ?: 0L }
+        val paidFee = nonCanceled.filter { it.delivery.isDeliveryFeePaid }.sumOf { it.delivery.deliveryFee ?: 0L }
+        val unpaidFee = nonCanceled.filter { !it.delivery.isDeliveryFeePaid }.sumOf { it.delivery.deliveryFee ?: 0L }
+
+        val paidAmount = nonCanceled.filter { it.delivery.isOrderAmountPaid }.sumOf { it.delivery.orderAmount ?: 0L }
+        val unpaidAmount = nonCanceled.filter { !it.delivery.isOrderAmountPaid }.sumOf { it.delivery.orderAmount ?: 0L }
 
         // Group by Driver
         val driverMap = mutableMapOf<Long, MutableList<DeliveryWithDetails>>()
@@ -104,6 +112,10 @@ class ReportViewModel(
             canceledMissionsCount = canceled,
             inProgressMissionsCount = inProgress,
             totalDeliveryFee = totalFee,
+            paidDeliveryFee = paidFee,
+            unpaidDeliveryFee = unpaidFee,
+            paidOrderAmount = paidAmount,
+            unpaidOrderAmount = unpaidAmount,
             driverReports = driverSummaries
         )
     }.stateIn(

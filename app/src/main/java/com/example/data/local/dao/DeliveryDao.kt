@@ -57,4 +57,10 @@ interface DeliveryDao {
 
     @Query("UPDATE deliveries SET status = :status, returnTime = :returnTime, updatedAt = :updatedAt WHERE id = :deliveryId")
     suspend fun updateDeliveryStatus(deliveryId: Long, status: String, returnTime: String, updatedAt: Long = System.currentTimeMillis())
+
+    @Query("UPDATE deliveries SET isDeliveryFeePaid = :isPaid, updatedAt = :updatedAt WHERE id = :deliveryId")
+    suspend fun updateDeliveryFeePaymentStatus(deliveryId: Long, isPaid: Boolean, updatedAt: Long = System.currentTimeMillis())
+
+    @Query("UPDATE deliveries SET isOrderAmountPaid = :isPaid, updatedAt = :updatedAt WHERE id = :deliveryId")
+    suspend fun updateOrderAmountPaymentStatus(deliveryId: Long, isPaid: Boolean, updatedAt: Long = System.currentTimeMillis())
 }

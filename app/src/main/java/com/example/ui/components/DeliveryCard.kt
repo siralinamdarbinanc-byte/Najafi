@@ -143,9 +143,76 @@ fun DeliveryCard(
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
-            // Footer: Time & Fee & Actions
+            // Payment Status Badges Row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (d.orderAmount != null) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "مبلغ: ${JalaliCalendarHelper.formatToman(d.orderAmount)}",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(
+                                    if (d.isOrderAmountPaid) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f)
+                                    else MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.7f)
+                                )
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = if (d.isOrderAmountPaid) "دریافت شد" else "دریافت نشد",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (d.isOrderAmountPaid) MaterialTheme.colorScheme.onPrimaryContainer
+                                else MaterialTheme.colorScheme.onErrorContainer
+                            )
+                        }
+                    }
+                }
+
+                if (d.deliveryFee != null) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "کرایه: ${JalaliCalendarHelper.formatToman(d.deliveryFee)}",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(
+                                    if (d.isDeliveryFeePaid) MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.8f)
+                                    else MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.7f)
+                                )
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = if (d.isDeliveryFeePaid) "کرایه دریافت شد" else "کرایه دریافت نشد",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (d.isDeliveryFeePaid) MaterialTheme.colorScheme.onSecondaryContainer
+                                else MaterialTheme.colorScheme.onErrorContainer
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Footer: Time & Actions
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -166,13 +233,6 @@ fun DeliveryCard(
                         color = MaterialTheme.colorScheme.outline
                     )
                 }
-
-                Text(
-                    text = JalaliCalendarHelper.formatToman(d.deliveryFee),
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
             }
 
             // Optional Quick Actions row if status is IN_PROGRESS

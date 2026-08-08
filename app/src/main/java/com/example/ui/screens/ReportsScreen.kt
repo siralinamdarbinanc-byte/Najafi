@@ -157,6 +157,53 @@ fun ReportsScreen(
                             modifier = Modifier.weight(1f)
                         )
                     }
+
+                    // Payment Breakdown Rows
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        ReportStatCard(
+                            title = "کرایه دریافت شده",
+                            value = JalaliCalendarHelper.formatToman(state.paidDeliveryFee),
+                            icon = Icons.Default.CheckCircle,
+                            color = Color(0xFF15803D),
+                            bgColor = Color(0xFFDCFCE7),
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        ReportStatCard(
+                            title = "کرایه دریافت نشده",
+                            value = JalaliCalendarHelper.formatToman(state.unpaidDeliveryFee),
+                            icon = Icons.Default.Cancel,
+                            color = Color(0xFFB91C1C),
+                            bgColor = Color(0xFFFEE2E2),
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        ReportStatCard(
+                            title = "مبلغ سفارش دریافت شده",
+                            value = JalaliCalendarHelper.formatToman(state.paidOrderAmount),
+                            icon = Icons.Default.CheckCircle,
+                            color = Color(0xFF1D4ED8),
+                            bgColor = Color(0xFFDBEAFE),
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        ReportStatCard(
+                            title = "مبلغ سفارش دریافت نشده",
+                            value = JalaliCalendarHelper.formatToman(state.unpaidOrderAmount),
+                            icon = Icons.Default.Cancel,
+                            color = Color(0xFFC2410C),
+                            bgColor = Color(0xFFFFEDD5),
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
             }
 

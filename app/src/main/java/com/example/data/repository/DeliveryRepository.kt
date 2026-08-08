@@ -85,4 +85,12 @@ class DeliveryRepository(private val deliveryDao: DeliveryDao) {
     suspend fun updateStatus(deliveryId: Long, status: String, returnTime: String) {
         deliveryDao.updateDeliveryStatus(deliveryId, status, returnTime)
     }
+
+    suspend fun updateDeliveryFeePaymentStatus(deliveryId: Long, isPaid: Boolean) {
+        deliveryDao.updateDeliveryFeePaymentStatus(deliveryId, isPaid)
+    }
+
+    suspend fun updateOrderAmountPaymentStatus(deliveryId: Long, isPaid: Boolean) {
+        deliveryDao.updateOrderAmountPaymentStatus(deliveryId, isPaid)
+    }
 }
