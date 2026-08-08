@@ -1,0 +1,6 @@
+{
+  "name": "پیک فروشگاه",
+  "description": "سامانه ثبت و مدیریت مأموریت‌های پیک مغازه به صورت کاملاً آفلاین",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
